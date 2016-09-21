@@ -21,7 +21,7 @@
 #include <arpa/inet.h>
 
 /* 最多线程数 */
-#define MAXCHILD 128
+#define MAXCHILD 2
 
 /* 原始套接字 */
 int sockfd;
@@ -67,8 +67,7 @@ struct pseudohdr
 };
 
 /* CRC16校验 */
-unsigned short inline
-checksum (unsigned short *buffer, unsigned short size)     
+unsigned short checksum (unsigned short *buffer, unsigned short size)     
 {  
 
 	unsigned long cksum = 0;
@@ -93,8 +92,7 @@ checksum (unsigned short *buffer, unsigned short size)
  * TCP伪头部仅用于校验和的计算
 
  */
-void
-init_header(struct ip *ip, struct tcphdr *tcp, struct pseudohdr *pseudoheader)
+void init_header(struct ip *ip, struct tcphdr *tcp, struct pseudohdr *pseudoheader)
 {
 	int len = sizeof(struct ip) + sizeof(struct tcphdr);
 	// IP头部数据初始化
@@ -134,8 +132,7 @@ init_header(struct ip *ip, struct tcphdr *tcp, struct pseudohdr *pseudoheader)
  * 填写IP头部，TCP头部
  * TCP伪头部仅用于校验和的计算
  */
-void
-send_synflood(struct sockaddr_in *addr)
+void send_synflood(struct sockaddr_in *addr)
 { 
 	char buf[100], sendbuf[100];
 	int len;
@@ -183,15 +180,13 @@ send_synflood(struct sockaddr_in *addr)
 }
 
 /* 信号处理函数,设置退出变量alive */
-void 
-sig_int(int signo)
+void sig_int(int signo)
 {
 	alive = 0;
 }
 
 /* 主函数 */
-int 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	struct sockaddr_in addr;
 	struct hostent * host = NULL;
