@@ -8,6 +8,7 @@
 #include <linux/if_packet.h>
 #include <netinet/if_ether.h>
 #include <netinet/in.h>
+#include <time.h>
 
 typedef struct _iphdr //定义IP首部 
 { 
@@ -62,6 +63,7 @@ void analyseICMP(ICMP_HEADER *icmp);
 
 int main(void)
 {
+    int t = 10000;
     int sockfd;
      IP_HEADER *ip;
     char buf[10240];
@@ -72,7 +74,7 @@ int main(void)
         printf("socket error!\n");
         return 1;
     }
-    while (1)
+    while (t-->0)
     {
         n = recv(sockfd, buf, sizeof(buf), 0);
         if (n == -1)
@@ -122,7 +124,6 @@ void analyseIP(IP_HEADER *ip)
     printf("Source IP\t: %u.%u.%u.%u\n",p[0],p[1],p[2],p[3]);
     p = (unsigned char*)&ip->destIP;
     printf("Destination IP\t: %u.%u.%u.%u\n",p[0],p[1],p[2],p[3]);
-
 }
 
 void analyseTCP(TCP_HEADER *tcp)
