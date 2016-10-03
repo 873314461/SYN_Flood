@@ -3,6 +3,8 @@ import socket
 import struct
 from ctypes import *
 from binascii import *
+from model import DBSession, Request
+import datetime
 
 # 监听的主机IP
 host = "192.168.1.243"
@@ -69,11 +71,15 @@ class IP(Structure):
         self.src_address = socket.inet_ntoa(struct.pack("<I", self.src))
         self.dst_address = socket.inet_ntoa(struct.pack("<I", self.dst))
 
+        self.header_len = int(self.ihl) * 4
+
         # type of protocol
         try:
             self.protocol = self.protocol_map[self.protocol_num]
         except:
             self.protocol = str(self.protocol_num)
+
+session = DBSession()
 
 socket_protocol = socket.IPPROTO_ICMP
 
@@ -89,12 +95,33 @@ try:
         print "Protocol: %s\nMAC_Src: %s\nMAC_Dest: %s" %(eth_header.protocol,
                                                         eth_header.src_address,
                                                         eth_header.dst_address,)
-         
+        
         ip_header = IP(raw_buffer[14:34])
-        print "Protocol: %s\nMAC_Src: %s\nMAC_Dest: %s\n\n" % (ip_header.protocol, 
+        print "Protocol: %s\nIP_Src: %s\nIP_Dest: %s" % (ip_header.protocol, 
                                                         ip_header.src_address, 
                                                         ip_header.dst_address)
+        
+        tcp_flag = raw_buffer[14 + ip_header.header_len + 13]
 
+        is_syn = 0
+        if (ip_header.protocol == "TCP") and (int(b2a_hex(tcp_flag), 16) & 0x2 != 0):
+            is_syn = 1
+
+        if is_syn == 1:
+            print "SYN"
+        
+        print "\n"
+        rqst = Request( ID = None,
+                        src_mac = eth_header.src_address,
+                        dst_mac = eth_header.dst_address,
+                        src_ip = ip_header.src_address,
+                        dst_ip = ip_header.dst_address,
+                        prot_ip = ip_header.protocol,
+                        is_syn = is_syn,
+                        time = datetime.datetime.now()
+                    )
+        session.add(rqst)
+        session.commit()
         
 except KeyboardInterrupt:
-    pass
+    session.close()
