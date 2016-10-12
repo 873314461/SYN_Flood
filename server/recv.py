@@ -84,8 +84,6 @@ session = DBSession()
 socket_protocol = socket.IPPROTO_ICMP
 
 sniffer = socket.socket(socket.PF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
-#sniffer.bind((host, 0))
-#sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
 try:
     while True:

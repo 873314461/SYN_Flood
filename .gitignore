@@ -2,3 +2,7 @@
 .vscode/*
 *.db
 *.pyc
+ui-server/typings/*
+ui-server/node_modules/*
+ui-server/app/*.js
+ui-server/app/*.js.map
