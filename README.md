@@ -10,17 +10,17 @@ Mail: admin@whaoyu.com
 本程序主要实现了 伪装IP/MAC+SYN洪水功能，使用了多进程。
 
 ##使用:
-1. server目录下：
+* server目录下：
 ```
 sudo python manage.py runserver --port 80
 sudo python recv.py
 ```
-2. ui-server目录下：
+* ui-server目录下：
 ```
 npm install
 npm start
 ```
-3. gui目录下：
+* gui目录下：
 ```
 sudo python gui.py
 ```
