@@ -1,21 +1,28 @@
 # SYN_Flood
 
-Author: Jiange
+Author: Wang Haoyu
 
-Mail: jiangezh@qq.com 
-
-Created Time: 2016年01月01日 星期五 22时32分34秒
-
+Mail: admin@whaoyu.com 
 
 ##说明：
 本代码仅用于学习，请勿用于不正当途径。
 
-本程序主要实现了 伪装IP+SYN洪水功能，使用了多进程。
-
+本程序主要实现了 伪装IP/MAC+SYN洪水功能，使用了多进程。
 
 ##使用:
+1. server目录下：
+```
+sudo python manage.py runserver --port 80
+sudo python recv.py
+```
+2. ui-server目录下：
+```
+npm install
+npm start
+```
+3. gui目录下：
+```
+sudo python gui.py
+```
 
-```
-$ gcc -o syn syn_flood.c -lpthread
-$ sudo ./syn <IPaddress> <port>
-```
+**注意:**如果有依赖不满足，请先安装依赖
