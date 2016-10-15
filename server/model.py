@@ -17,5 +17,5 @@ class Request(BaseObj):
     time = Column(DATETIME)
 
 
-engine = create_engine("sqlite:///./database")
+engine = create_engine("sqlite:///./database.db")
 DBSession = sessionmaker(bind=engine)

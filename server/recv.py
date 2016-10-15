@@ -79,47 +79,51 @@ class IP(Structure):
         except:
             self.protocol = str(self.protocol_num)
 
-session = DBSession()
+def listen():
+    session = DBSession()
 
-socket_protocol = socket.IPPROTO_ICMP
+    socket_protocol = socket.IPPROTO_ICMP
 
-sniffer = socket.socket(socket.PF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
+    sniffer = socket.socket(socket.PF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
 
-try:
-    while True:
-        raw_buffer = sniffer.recvfrom(65535)[0]
+    try:
+        while True:
+            raw_buffer = sniffer.recvfrom(65535)[0]
 
-        eth_header = Ethernet(raw_buffer[:14])
-        print "Protocol: %s\nMAC_Src: %s\nMAC_Dest: %s" %(eth_header.protocol,
-                                                        eth_header.src_address,
-                                                        eth_header.dst_address,)
-        
-        ip_header = IP(raw_buffer[14:34])
-        print "Protocol: %s\nIP_Src: %s\nIP_Dest: %s" % (ip_header.protocol, 
-                                                        ip_header.src_address, 
-                                                        ip_header.dst_address)
-        
-        tcp_flag = raw_buffer[14 + ip_header.header_len + 13]
+            eth_header = Ethernet(raw_buffer[:14])
+            print "Protocol: %s\nMAC_Src: %s\nMAC_Dest: %s" %(eth_header.protocol,
+                                                            eth_header.src_address,
+                                                            eth_header.dst_address,)
+            
+            ip_header = IP(raw_buffer[14:34])
+            print "Protocol: %s\nIP_Src: %s\nIP_Dest: %s" % (ip_header.protocol, 
+                                                            ip_header.src_address, 
+                                                            ip_header.dst_address)
+            
+            tcp_flag = raw_buffer[14 + ip_header.header_len + 13]
 
-        is_syn = 0
-        if (ip_header.protocol == "TCP") and (int(b2a_hex(tcp_flag), 16) & 0x2 != 0):
-            is_syn = 1
+            is_syn = 0
+            if (ip_header.protocol == "TCP") and (int(b2a_hex(tcp_flag), 16) & 0x2 != 0):
+                is_syn = 1
 
-        if is_syn == 1:
-            print "SYN"
-        
-        print "\n"
-        rqst = Request( ID = None,
-                        src_mac = eth_header.src_address,
-                        dst_mac = eth_header.dst_address,
-                        src_ip = ip_header.src_address,
-                        dst_ip = ip_header.dst_address,
-                        prot_ip = ip_header.protocol,
-                        is_syn = is_syn,
-                        time = datetime.datetime.now()
-                    )
-        session.add(rqst)
-        session.commit()
-        
-except KeyboardInterrupt:
-    session.close()
+            if is_syn == 1:
+                print "SYN"
+            
+            print "\n"
+            rqst = Request( ID = None,
+                            src_mac = eth_header.src_address,
+                            dst_mac = eth_header.dst_address,
+                            src_ip = ip_header.src_address,
+                            dst_ip = ip_header.dst_address,
+                            prot_ip = ip_header.protocol,
+                            is_syn = is_syn,
+                            time = datetime.datetime.now()
+                        )
+            session.add(rqst)
+            session.commit()
+            
+    except KeyboardInterrupt:
+        session.close()
+
+if __name__=='__main__':
+    listen()
